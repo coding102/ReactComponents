@@ -3,7 +3,64 @@ import './App.css';
 
 
 
+// Country's phone # prefix recognition
+let prefixes = {
+  'United States': '+1',
+  'Germany': '+49',
+  'Guatemala': '+502',
+  'Japan': '+81'
+}
+class Prefixer extends React.Component {
+  constructor(props) {
+    super(props);
+    let country = this.props.initialCountry || "United States";
+    this.state = { country: country };
+    this.handleChange = this.handleChange.bind(this);
+  }
+  handleChange(e) {
+    let newCountry = e.target.value;
+    this.setState({ country: newCountry });
+  }
+  countryItem(country, index) {
+    return (
+      <option value={country} key={index}>{country}</option>
+    );
+  }
+  render() {
+    let prefix = prefixes[this.state.country];
+    return (
+      <div className="form-horizontal">
+        <div className="form-group">
+          <label htmlFor="selectbox" className="col-sm-3 control-label">Country</label>
+          <div className="col-sm-3">
+            <select className="form-control" id="selectbox" onChange={this.handleChange} value={this.state.country} >
+              {Object.keys(prefixes).map(this.countryItem)}
+            </select>
+          </div>
+        </div>
+        <div className="form-group">
+          <label htmlFor="input-text" className="col-sm-3 control-label">Phone Number</label>
+          <div className="col-sm-3">
+            <div className="input-group">
+              <span className="input-group-addon">{prefix}</span>
+              <input type="text" className="form-control" id="input-text" />
+
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+
+
+
 // Credit Card Input/Card Type Recognition
+let types = {
+  'Visa': /^4/,
+  'MasterCard': /^5[1-5]/,
+  'American Express': /^3[47]/
+};
 class CreditCard extends Component {
   constructor(props) {
     super(props);
@@ -47,11 +104,7 @@ class CreditCard extends Component {
     )
   }
 }
-let types = {
-  'Visa': /^4/,
-  'MasterCard': /^5[1-5]/,
-  'American Express': /^3[47]/
-};
+
 
 
 
@@ -85,13 +138,14 @@ class Clicked extends Component {
 }
 
 
-
+// Top Component   
 class App extends Component {
   render() {
     return (
       <div className="App">
         <Clicked name="Visitor" />
         <CreditCard types={types} />
+        <Prefixer />
       </div>
     );
   }
