@@ -1,5 +1,54 @@
 import React, { Component } from 'react';
 import './App.css';
+import { Table } from 'react-bootstrap';
+
+
+
+// Sortable table
+class SortableTable extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { records: this.props.initialRecords };
+  }
+  render() {
+    let {records} = this.state;
+    return (
+      <Table striped bordered condensed hover>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Birth Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {records.map(this.renderRow)}
+        </tbody>
+      </Table>
+    );
+  }
+  renderRow(record, index) {
+    return (
+      <tr key={index}>
+        <th>{index + 1}</th>
+        <th>{record.firstName}</th>
+        <th>{record.lastName}</th>
+        <th>{record.birthDate}</th>
+      </tr>
+    );
+  }
+}
+SortableTable.defaultProps = {
+  initialRecords: [
+    {firstName: "Angus", lastName: "Young", birthDate: "1960-03-31"},
+    {firstName: "Mark", lastName: "Young", birthDate: "1965-03-31"},
+    {firstName: "Erick", lastName: "Young", birthDate: "1970-03-31"},
+    {firstName: "Janis", lastName: "Scott", birthDate: "1980-03-31"},
+    {firstName: "Leslie", lastName: "William", birthDate: "1981-03-31"},
+    {firstName: "Zul", lastName: "Sams", birthDate: "1966-03-31"}
+  ]
+};
 
 
 
@@ -214,6 +263,7 @@ class App extends Component {
         <CreditCard types={types} />
         <Prefixer />
         <TweetBox />
+        <SortableTable />
       </div>
     );
   }
