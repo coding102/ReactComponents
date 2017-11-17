@@ -1,23 +1,49 @@
 import React, { Component } from 'react';
 import './App.css';
 import { Table } from 'react-bootstrap';
+var clone = require('clone');
 
 
 
 // Sortable table
+class SortableHeader extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleHeaderClick = this.handleHeaderClick.bind(this);
+  }
+  handleHeaderClick(event) {
+    event.preventDefault();
+    this.props.onClick(this.props.attribute);
+  }
+  render() {
+    return (
+      <th><a onClick={this.handleHeaderClick}>{this.props.title}</a></th>
+    );
+  }
+}
 class SortableTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = { records: this.props.initialRecords };
+    this.sort = this.sort.bind(this);
+  }
+  sort(attribute) {
+    let { records } = clone(this.state);
+    records.sort(function(a, b){
+      return a[attribute].localeCompare(b[attribute]);
+    });
+    this.setState({ records: records });
   }
   render() {
-    let {records} = this.state;
+    let { records } = this.state;
     return (
       <Table striped bordered condensed hover>
         <thead>
           <tr>
             <th>#</th>
-            <th>First Name</th>
+            <SortableHeader title="First Name" 
+                            attribute="firstName" 
+                            onClick={this.sort} />
             <th>Last Name</th>
             <th>Birth Date</th>
           </tr>
