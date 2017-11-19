@@ -9,15 +9,34 @@ var clone = require('clone');
 class SortableHeader extends React.Component {
   constructor(props) {
     super(props);
+    this.state = { order: null };
     this.handleHeaderClick = this.handleHeaderClick.bind(this);
+    this.setOrder = this.setOrder.bind(this);
+  }
+  setOrder() {
+    let { order } = this.state;
+    if (order == null || order === "v") {
+      this.setState({ order: "^" });
+    }
+    else {
+      this.setState({ order: "v" });
+    }
   }
   handleHeaderClick(event) {
     event.preventDefault();
-    this.props.onClick(this.props.attribute);
+    this.setOrder();
+    this.props.onClick(this.props.attribute, this.state.order);
   }
   render() {
+    let indicator;
+    if (this.state.order) {
+      indicator = " " + this.state.order;
+    }
     return (
-      <th><a onClick={this.handleHeaderClick}>{this.props.title}</a></th>
+      <th>
+        <a onClick={this.handleHeaderClick}>{this.props.title}</a>
+        {indicator}
+      </th>
     );
   }
 }
@@ -27,11 +46,42 @@ class SortableTable extends React.Component {
     this.state = { records: this.props.initialRecords };
     this.sort = this.sort.bind(this);
   }
-  sort(attribute) {
-    let { records } = clone(this.state);
-    records.sort(function(a, b){
-      return a[attribute].localeCompare(b[attribute]);
+  wrap(array) {
+    return array.map(function(item, index) {
+      return { key: item, position: index };
     });
+  }
+  unwrap(array) {
+    return array.map(function(item, index){
+      return item.key;
+    });
+  }
+  getComparator(attribute, order) {
+    if (order === "^") {
+      return function(a, b) {
+        let diff = b.key[attribute].localeCompare(a.key[attribute]);
+        if (diff === 0) {
+          return a.position - b.position;
+        }
+        return diff;
+      };
+    }
+    else {
+      return function(a, b) {
+        let diff = a.key[attribute].localeCompare(b.key[attribute]);
+        if (diff === 0) {
+          return a.position - b.position;
+        }
+        return diff;
+      };
+    }
+  }
+  sort(attribute, order) {
+    let { records } = clone(this.state);
+    let comparator = this.getComparator(attribute, order);
+    records = this.wrap(records);
+    records.sort(comparator);
+    records = this.unwrap(records);
     this.setState({ records: records });
   }
   render() {
@@ -44,8 +94,12 @@ class SortableTable extends React.Component {
             <SortableHeader title="First Name" 
                             attribute="firstName" 
                             onClick={this.sort} />
-            <th>Last Name</th>
-            <th>Birth Date</th>
+            <SortableHeader title="Last Name" 
+                            attribute="lastName" 
+                            onClick={this.sort} />
+            <SortableHeader title="Birth Date" 
+                            attribute="birthDate" 
+                            onClick={this.sort} />
           </tr>
         </thead>
         <tbody>
