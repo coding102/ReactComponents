@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { ListGroup, ListGroupItem } from 'react-bootstrap';
 import './App.css';
 import { Table } from 'react-bootstrap';
 var clone = require('clone');
@@ -7,7 +8,16 @@ var clone = require('clone');
 
 class ChannelSearch extends React.Component {
   render() {
-    return null;
+    let { channels } = this.props;
+    return ( 
+      <ListGroup>
+          {channels.map(channel =>
+            <ListGroupItem key={channel}>
+              {channel}
+            </ListGroupItem>
+          )}
+      </ListGroup>
+    );
   }
 }
 ChannelSearch.defaultProps = {
@@ -362,10 +372,16 @@ class App extends Component {
     return (
       <div className="App">
         <Clicked name="Visitor" />
+       
         <CreditCard types={types} />
+       
         <Prefixer />
+        
         <TweetBox />
+       
         <SortableTable />
+       
+        <ChannelSearch />
       </div>
     );
   }
