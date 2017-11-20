@@ -5,6 +5,28 @@ var clone = require('clone');
 
 
 
+class ChannelSearch extends React.Component {
+  render() {
+    return null;
+  }
+}
+ChannelSearch.defaultProps = {
+  channels: [
+    "reactnative",
+    "api",
+    "javascript",
+    "ruby",
+    "rails",
+    "graphql",
+    "redux",
+    "dom",
+    "loop"
+  ]
+};
+
+
+
+
 // Sortable table
 class SortableHeader extends React.Component {
   constructor(props) {
