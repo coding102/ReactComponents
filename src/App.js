@@ -1,22 +1,48 @@
 import React, { Component } from 'react';
-import { ListGroup, ListGroupItem } from 'react-bootstrap';
+import { ListGroup, ListGroupItem, Grid, Row, input } from 'react-bootstrap';
 import './App.css';
 import { Table } from 'react-bootstrap';
 var clone = require('clone');
 
 
-
-class ChannelSearch extends React.Component {
+// Search function
+class Channels extends React.Component {
   render() {
     let { channels } = this.props;
-    return ( 
+    return (
       <ListGroup>
-          {channels.map(channel =>
-            <ListGroupItem key={channel}>
-              {channel}
-            </ListGroupItem>
-          )}
+        {channels.map(channel =>
+          <ListGroupItem key={channel} href={`#${channel}`}>
+            #{channel}
+          </ListGroupItem>
+        )}
       </ListGroup>
+    );
+  }
+}
+class ChannelSearch extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { searchQuery: '' };
+    this.changeSearchQuery = this.changeSearchQuery.bind(this);
+  }
+  changeSearchQuery(event) {
+    
+  }
+  render() {
+    let { channels } = this.props;
+    let { searchQuery } = this.state;
+    return ( 
+      <Grid fluid={true}>
+        <Row>
+            <input type="text"
+                  placeholder="Search Channels"
+                  bsSize="large" 
+                  value={searchQuery}
+                  onChange={this.changeSearchQuery} />
+            <Channels channels={channels} /> 
+        </Row>
+      </Grid>
     );
   }
 }
