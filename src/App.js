@@ -1,7 +1,38 @@
 import React, { Component } from 'react';
-import { Table, ListGroup, ListGroupItem, Grid, Row, FormControl, Well } from 'react-bootstrap';
+import { Table, ListGroup, ListGroupItem, Grid, Row, Col, FormControl, Well } from 'react-bootstrap';
 import './App.css';
 var clone = require('clone');
+var classNames = require('classnames');
+
+
+
+// Password Strength
+class PasswordInput extends React.Component {
+  render() {
+    return (
+      <Grid>
+        <Row>
+          <Col md={8}>
+            <PasswordField />
+          </Col>
+          <Col md={4}>
+            <StrengthMeter />
+          </Col>
+        </Row>
+      </Grid>
+    );
+  }
+}
+class StrenghtMeter extends React.Component {
+  render () {
+    return null;
+  }
+}
+class PasswordField extends React.Component {
+  render () {
+    return null;
+  }
+}
 
 
 // Search function
@@ -446,6 +477,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+
         <Clicked name="Visitor" />
        
         <CreditCard types={types} />
@@ -457,6 +489,9 @@ class App extends Component {
         <SortableTable />
        
         <ChannelSearch />
+
+        <PasswordInput />
+
       </div>
     );
   }
