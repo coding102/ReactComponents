@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, ListGroup, ListGroupItem, Grid, Row, Col, Panel, FormControl, Well } from 'react-bootstrap';
+import { Table, ListGroup, ListGroupItem, Grid, Row, Col, Panel, FormControl, Well, ProgressBar } from 'react-bootstrap';
 import './App.css';
 var clone = require('clone');
 var classNames = require('classnames');
@@ -8,8 +8,13 @@ var classNames = require('classnames');
 
 // Password Strength
 class PasswordInput extends React.Component {
+  constructor(props) {
+    super(props);
+      this.state = { password: '' };
+  }
   render() {
     let { goodPasswordPrinciples } = this.props;
+    let { password } = this.state;
     return (
       <Grid>
         <Row>
@@ -17,7 +22,8 @@ class PasswordInput extends React.Component {
             <PasswordField />
           </Col>
           <Col md={4}>
-            <StrengthMeter principles={goodPasswordPrinciples} />
+            <StrengthMeter principles={goodPasswordPrinciples} 
+                           password={password} />
           </Col>
         </Row>
       </Grid>
@@ -25,6 +31,17 @@ class PasswordInput extends React.Component {
   }
 }
 class StrengthMeter extends React.Component {
+  principleSatisfied(principle) {
+    let { password } = this.props;
+    return principle.predicate(password);
+  }
+  principleClass(principle) {
+    let satisfied = this.principleSatisfied(principle);
+    return classNames({
+      ["text-success"]: satisfied,
+      ["text-danger"]: !satisfied
+    });
+  }
   render () {
     let { principles } = this.props;
     return (
@@ -32,7 +49,7 @@ class StrengthMeter extends React.Component {
         <h5>A Good Password Is;</h5>
         <ul>
           {principles.map(principle => 
-            <li>
+            <li className={this.principleClass(principle)}>
               <small>
                 {principle.label}
               </small>
