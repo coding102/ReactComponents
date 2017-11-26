@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, ListGroup, ListGroupItem, Grid, Row, Col, FormControl, Well } from 'react-bootstrap';
+import { Table, ListGroup, ListGroupItem, Grid, Row, Col, Panel, FormControl, Well } from 'react-bootstrap';
 import './App.css';
 var clone = require('clone');
 var classNames = require('classnames');
@@ -9,6 +9,7 @@ var classNames = require('classnames');
 // Password Strength
 class PasswordInput extends React.Component {
   render() {
+    let { goodPasswordPrinciples } = this.props;
     return (
       <Grid>
         <Row>
@@ -16,16 +17,30 @@ class PasswordInput extends React.Component {
             <PasswordField />
           </Col>
           <Col md={4}>
-            <StrengthMeter />
+            <StrengthMeter principles={goodPasswordPrinciples} />
           </Col>
         </Row>
       </Grid>
     );
   }
 }
-class StrenghtMeter extends React.Component {
+class StrengthMeter extends React.Component {
   render () {
-    return null;
+    let { principles } = this.props;
+    return (
+      <Panel>
+        <h5>A Good Password Is;</h5>
+        <ul>
+          {principles.map(principle => 
+            <li>
+              <small>
+                {principle.label}
+              </small>
+            </li>
+          )}
+        </ul>
+      </Panel>
+    );
   }
 }
 class PasswordField extends React.Component {
@@ -33,7 +48,24 @@ class PasswordField extends React.Component {
     return null;
   }
 }
-
+const SPECIAL_CHARS_REGEX = /[^A-Za-z0-9]/;
+const DIGIT_REGEX = /0-9/;
+PasswordInput.defaultProps = {
+  goodPasswordPrinciples: [
+    {
+      label: "6+ characters",
+      predicate: password => password.length >= 6
+    },
+    {
+      label: "with at least one digit",
+      predicate: password => password.match(DIGIT_REGEX) !== null
+    },
+    {
+      label: "with at least one special character",
+      predicate: password => password.match(SPECIAL_CHARS_REGEX) !== null
+    }
+  ]
+};
 
 // Search function
 class ChannelSearch extends React.Component {
