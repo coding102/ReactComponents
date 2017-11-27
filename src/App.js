@@ -31,6 +31,26 @@ class PasswordInput extends React.Component {
   }
 }
 class StrengthMeter extends React.Component {
+  satisfiedPercent() {
+    let { principles, password } = this.props;
+    let satisfiedCount = principles.map(p => p.predicate(password))
+                        .reduce((count, satisfied) =>
+                          count + (satisfied ? 1 : 0 )
+                        , 0);
+    let principlesCount = principles.length;
+    return (satisfiedCount / principlesCount) * 100.0;
+  }
+  render () {
+    return (
+      <Panel>
+        <ProgressBar now={this.satisfiedPercent()} />
+        <h5>A Good Password Is;</h5>
+        <PrinciplesList {...this.props} />
+      </Panel>
+    );
+  }
+}
+class PrinciplesList extends React.Component {
   principleSatisfied(principle) {
     let { password } = this.props;
     return principle.predicate(password);
@@ -45,18 +65,15 @@ class StrengthMeter extends React.Component {
   render () {
     let { principles } = this.props;
     return (
-      <Panel>
-        <h5>A Good Password Is;</h5>
-        <ul>
-          {principles.map(principle => 
-            <li className={this.principleClass(principle)}>
-              <small>
-                {principle.label}
-              </small>
-            </li>
-          )}
-        </ul>
-      </Panel>
+      <ul>
+        {principles.map(principle => 
+          <li className={this.principleClass(principle)}>
+            <small>
+              {principle.label}
+            </small>
+          </li>
+        )}
+      </ul>
     );
   }
 }
