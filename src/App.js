@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, ListGroup, ListGroupItem, Grid, Row, Col, Panel, FormControl, Well, ProgressBar } from 'react-bootstrap';
+import { Table, ListGroup, ListGroupItem, Grid, Row, Col, Panel, FormControl, Well, ProgressBar, FormGroup, ControlLabel } from 'react-bootstrap';
 import './App.css';
 var clone = require('clone');
 var classNames = require('classnames');
@@ -10,7 +10,7 @@ var classNames = require('classnames');
 class PasswordInput extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { password: ''};
+    this.state = { password: "" };
     this.changePassword = this.changePassword.bind(this);
   }
   changePassword(password) {
@@ -19,17 +19,22 @@ class PasswordInput extends React.Component {
   render() {
     let { goodPasswordPrinciples } = this.props;
     let { password } = this.state;
+
     return (
       <Grid>
         <Row>
           <Col md={8}>
-            <PasswordField password={password} 
-                           onPasswordChange={this.onPasswordChange}
-                           principles={goodPasswordPrinciples} />
+            <PasswordField
+              password={password}
+              onPasswordChange={this.changePassword}
+              principles={goodPasswordPrinciples}
+            />
           </Col>
           <Col md={4}>
-            <StrengthMeter principles={goodPasswordPrinciples} 
-                           password={password} />
+            <StrengthMeter
+              password={password}
+              principles={goodPasswordPrinciples}
+            />
           </Col>
         </Row>
       </Grid>
@@ -37,11 +42,11 @@ class PasswordInput extends React.Component {
   }
 }
 class StrengthMeter extends React.Component {
-  render () {
+  render() {
     return (
       <Panel>
         <PrinciplesProgress {...this.props} />
-        <h5>A Good Password Is;</h5>
+        <h5>A good password has:</h5>
         <PrinciplesList {...this.props} />
       </Panel>
     );
@@ -50,25 +55,29 @@ class StrengthMeter extends React.Component {
 class PrinciplesProgress extends React.Component {
   satisfiedPercent() {
     let { principles, password } = this.props;
-    let satisfiedCount = principles.map(p => p.predicate(password))
-                        .reduce((count, satisfied) =>
-                          count + (satisfied ? 1 : 0 )
-                        , 0);
+
+    let satisfiedCount = principles
+      .map(p => p.predicate(password))
+      .reduce((count, satisfied) => count + (satisfied ? 1 : 0), 0);
+
     let principlesCount = principles.length;
-    return (satisfiedCount / principlesCount) * 100.0;
+    return satisfiedCount / principlesCount * 100.0;
   }
   progressColor() {
     let percentage = this.satisfiedPercent();
+
     return classNames({
-      danger: (percentage < 33.4),
-      success: (percentage >= 66.7),
-      warning: (percentage >= 33.4 && percentage < 66.7)
+      danger: percentage < 33.4,
+      success: percentage >= 66.7,
+      warning: percentage >= 33.4 && percentage < 66.7
     });
   }
   render() {
     return (
-      <ProgressBar now={this.satisfiedPercent()} 
-                   bsStyle={this.progressColor()} />
+      <ProgressBar
+        now={this.satisfiedPercent()}
+        bsStyle={this.progressColor()}
+      />
     );
   }
 }
@@ -84,12 +93,12 @@ class PrinciplesList extends React.Component {
       ["text-danger"]: !satisfied
     });
   }
-  render () {
+  render() {
     let { principles } = this.props;
     return (
       <ul>
-        {principles.map(principle => 
-          <li className={this.principleClass(principle)}>
+        {principles.map(principle =>
+          <li key={principle.label} className={this.principleClass(principle)}>
             <small>
               {principle.label}
             </small>
@@ -99,47 +108,53 @@ class PrinciplesList extends React.Component {
     );
   }
 }
-
 class PasswordField extends React.Component {
   constructor(props) {
     super(props);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
   }
-  handlePasswordChange(event) {
+  handlePasswordChange(ev) {
     let { onPasswordChange } = this.props;
-    onPasswordChange(event.target.value);
+    onPasswordChange(ev.target.value);
   }
   satisfiedPercent() {
     let { principles, password } = this.props;
-    let satisfiedCount = principles.map(p => p.predicate(password))
-                                  .reduce((count, satisfied) =>
-                                    count + (satisfied ? 1 : 0)
-                                  , 0);
+
+    let satisfiedCount = principles
+      .map(p => p.predicate(password))
+      .reduce((count, satisfied) => count + (satisfied ? 1 : 0), 0);
+
     let principlesCount = principles.length;
-    return (satisfiedCount / principlesCount) * 100.0;
+
+    return satisfiedCount / principlesCount * 100.0;
   }
   inputColor() {
     let percentage = this.satisfiedPercent();
+
     return classNames({
-      error: (percentage < 33.4),
-      success: (percentage >= 66.7),
-      warning: (percentage >= 33.4 && percentage < 66.7)
+      error: percentage < 33.4,
+      success: percentage >= 66.7,
+      warning: percentage >= 33.4 && percentage < 66.7
     });
   }
   render() {
     let { password } = this.props;
-    return(
-      <FormControl type='password'
-             label='Password'
-             value={password}
-             onChange={this.handlePasswordChange}
-             bsStyle={this.inputColor()}
-             className= '.has-feedback' />
+    return (
+      <FormGroup validationState={this.inputColor()}>
+        <ControlLabel>Password</ControlLabel>
+        <FormControl
+          type="password"
+          value={password}
+          onChange={this.handlePasswordChange}
+        />
+        <FormControl.Feedback />
+      </FormGroup>
     );
   }
 }
 const SPECIAL_CHARS_REGEX = /[^A-Za-z0-9]/;
-const DIGIT_REGEX = /0-9/;
+const DIGIT_REGEX = /[0-9]/;
+
 PasswordInput.defaultProps = {
   goodPasswordPrinciples: [
     {
@@ -156,7 +171,6 @@ PasswordInput.defaultProps = {
     }
   ]
 };
-
 
 
 
