@@ -40,10 +40,19 @@ class StrengthMeter extends React.Component {
     let principlesCount = principles.length;
     return (satisfiedCount / principlesCount) * 100.0;
   }
+  progressColor() {
+    let percentage = this.satisfiedPercent();
+    return classNames({
+      danger: (percentage < 33.4),
+      success: (percentage >= 66.7),
+      warning: (percentage >= 33.4 && percentage < 66.7)
+    });
+  }
   render () {
     return (
       <Panel>
-        <ProgressBar now={this.satisfiedPercent()} />
+        <ProgressBar now={this.satisfiedPercent()} 
+                     bsStyle={this.progressColor()} />
         <h5>A Good Password Is;</h5>
         <PrinciplesList {...this.props} />
       </Panel>
