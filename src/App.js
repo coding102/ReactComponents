@@ -10,7 +10,11 @@ var classNames = require('classnames');
 class PasswordInput extends React.Component {
   constructor(props) {
     super(props);
-      this.state = { password: '' };
+    this.state = { password: ''};
+    this.changePassword = this.changePassword.bind(this);
+  }
+  changePassword(password) {
+    this.setState({ password });
   }
   render() {
     let { goodPasswordPrinciples } = this.props;
@@ -19,7 +23,9 @@ class PasswordInput extends React.Component {
       <Grid>
         <Row>
           <Col md={8}>
-            <PasswordField />
+            <PasswordField password={password} 
+                           onPasswordChange={this.onPasswordChange}
+                           principles={goodPasswordPrinciples} />
           </Col>
           <Col md={4}>
             <StrengthMeter principles={goodPasswordPrinciples} 
@@ -31,6 +37,17 @@ class PasswordInput extends React.Component {
   }
 }
 class StrengthMeter extends React.Component {
+  render () {
+    return (
+      <Panel>
+        <PrinciplesProgress {...this.props} />
+        <h5>A Good Password Is;</h5>
+        <PrinciplesList {...this.props} />
+      </Panel>
+    );
+  }
+}
+class PrinciplesProgress extends React.Component {
   satisfiedPercent() {
     let { principles, password } = this.props;
     let satisfiedCount = principles.map(p => p.predicate(password))
@@ -48,14 +65,10 @@ class StrengthMeter extends React.Component {
       warning: (percentage >= 33.4 && percentage < 66.7)
     });
   }
-  render () {
+  render() {
     return (
-      <Panel>
-        <ProgressBar now={this.satisfiedPercent()} 
-                     bsStyle={this.progressColor()} />
-        <h5>A Good Password Is;</h5>
-        <PrinciplesList {...this.props} />
-      </Panel>
+      <ProgressBar now={this.satisfiedPercent()} 
+                   bsStyle={this.progressColor()} />
     );
   }
 }
@@ -86,9 +99,43 @@ class PrinciplesList extends React.Component {
     );
   }
 }
+
 class PasswordField extends React.Component {
-  render () {
-    return null;
+  constructor(props) {
+    super(props);
+    this.handlePasswordChange = this.handlePasswordChange.bind(this);
+  }
+  handlePasswordChange(event) {
+    let { onPasswordChange } = this.props;
+    onPasswordChange(event.target.value);
+  }
+  satisfiedPercent() {
+    let { principles, password } = this.props;
+    let satisfiedCount = principles.map(p => p.predicate(password))
+                                  .reduce((count, satisfied) =>
+                                    count + (satisfied ? 1 : 0)
+                                  , 0);
+    let principlesCount = principles.length;
+    return (satisfiedCount / principlesCount) * 100.0;
+  }
+  inputColor() {
+    let percentage = this.satisfiedPercent();
+    return classNames({
+      error: (percentage < 33.4),
+      success: (percentage >= 66.7),
+      warning: (percentage >= 33.4 && percentage < 66.7)
+    });
+  }
+  render() {
+    let { password } = this.props;
+    return(
+      <FormControl type='password'
+             label='Password'
+             value={password}
+             onChange={this.handlePasswordChange}
+             bsStyle={this.inputColor()}
+             className= '.has-feedback' />
+    );
   }
 }
 const SPECIAL_CHARS_REGEX = /[^A-Za-z0-9]/;
@@ -109,6 +156,11 @@ PasswordInput.defaultProps = {
     }
   ]
 };
+
+
+
+
+
 
 // Search function
 class ChannelSearch extends React.Component {
