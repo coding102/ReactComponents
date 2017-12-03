@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, ListGroup, ListGroupItem, Grid, Row, Col, Panel, FormControl, Well, ProgressBar } from 'react-bootstrap';
+import { Table, ListGroup, ListGroupItem, Grid, Row, Col, Panel, FormControl, FormGroup, Well, ProgressBar, ControlLabel } from 'react-bootstrap';
 import './App.css';
 var clone = require('clone');
 var classNames = require('classnames');
@@ -10,136 +10,44 @@ var classNames = require('classnames');
 class PasswordInput extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { password: ''};
+    this.state = { password: "" };
+
     this.changePassword = this.changePassword.bind(this);
   }
+
   changePassword(password) {
     this.setState({ password });
   }
+
   render() {
     let { goodPasswordPrinciples } = this.props;
     let { password } = this.state;
+
     return (
       <Grid>
         <Row>
           <Col md={8}>
-            <PasswordField password={password} 
-                           onPasswordChange={this.onPasswordChange}
-                           principles={goodPasswordPrinciples} />
+            <PasswordField
+              password={password}
+              onPasswordChange={this.changePassword}
+              principles={goodPasswordPrinciples}
+            />
           </Col>
           <Col md={4}>
-            <StrengthMeter principles={goodPasswordPrinciples} 
-                           password={password} />
+            <StrengthMeter
+              password={password}
+              principles={goodPasswordPrinciples}
+            />
           </Col>
         </Row>
       </Grid>
     );
   }
 }
-class StrengthMeter extends React.Component {
-  render () {
-    return (
-      <Panel>
-        <PrinciplesProgress {...this.props} />
-        <h5>A Good Password Is;</h5>
-        <PrinciplesList {...this.props} />
-      </Panel>
-    );
-  }
-}
-class PrinciplesProgress extends React.Component {
-  satisfiedPercent() {
-    let { principles, password } = this.props;
-    let satisfiedCount = principles.map(p => p.predicate(password))
-                        .reduce((count, satisfied) =>
-                          count + (satisfied ? 1 : 0 )
-                        , 0);
-    let principlesCount = principles.length;
-    return (satisfiedCount / principlesCount) * 100.0;
-  }
-  progressColor() {
-    let percentage = this.satisfiedPercent();
-    return classNames({
-      danger: (percentage < 33.4),
-      success: (percentage >= 66.7),
-      warning: (percentage >= 33.4 && percentage < 66.7)
-    });
-  }
-  render() {
-    return (
-      <ProgressBar now={this.satisfiedPercent()} 
-                   bsStyle={this.progressColor()} />
-    );
-  }
-}
-class PrinciplesList extends React.Component {
-  principleSatisfied(principle) {
-    let { password } = this.props;
-    return principle.predicate(password);
-  }
-  principleClass(principle) {
-    let satisfied = this.principleSatisfied(principle);
-    return classNames({
-      ["text-success"]: satisfied,
-      ["text-danger"]: !satisfied
-    });
-  }
-  render () {
-    let { principles } = this.props;
-    return (
-      <ul>
-        {principles.map(principle => 
-          <li className={this.principleClass(principle)}>
-            <small>
-              {principle.label}
-            </small>
-          </li>
-        )}
-      </ul>
-    );
-  }
-}
 
-class PasswordField extends React.Component {
-  constructor(props) {
-    super(props);
-    this.handlePasswordChange = this.handlePasswordChange.bind(this);
-  }
-  handlePasswordChange(event) {
-    let { onPasswordChange } = this.props;
-    onPasswordChange(event.target.value);
-  }
-  satisfiedPercent() {
-    let { principles, password } = this.props;
-    let satisfiedCount = principles.map(p => p.predicate(password))
-                                  .reduce((count, satisfied) =>
-                                    count + (satisfied ? 1 : 0)
-                                  , 0);
-    let principlesCount = principles.length;
-    return (satisfiedCount / principlesCount) * 100.0;
-  }
-  inputColor() {
-    let percentage = this.satisfiedPercent();
-    return classNames({
-      error: (percentage < 33.4),
-      success: (percentage >= 66.7),
-      warning: (percentage >= 33.4 && percentage < 66.7)
-    });
-  }
-  render() {
-    let { password } = this.props;
-    return(
-      <FormControl type='password'
-             label='Password'
-             value={password}
-             onChange={this.handlePasswordChange}
-             bsStyle={this.inputColor()}
-             className= '.has-feedback' />
-    );
-  }
-}
 const SPECIAL_CHARS_REGEX = /[^A-Za-z0-9]/;
-const DIGIT_REGEX = /0-9/;
+const DIGIT_REGEX = /[0-9]/;
+
 PasswordInput.defaultProps = {
   goodPasswordPrinciples: [
     {
@@ -156,6 +64,134 @@ PasswordInput.defaultProps = {
     }
   ]
 };
+
+class StrengthMeter extends React.Component {
+  render() {
+    return (
+      <Panel>
+        <PrinciplesProgress {...this.props} />
+        <h5>A good password is:</h5>
+        <PrinciplesList {...this.props} />
+      </Panel>
+    );
+  }
+}
+
+class PrinciplesProgress extends React.Component {
+  satisfiedPercent() {
+    let { principles, password } = this.props;
+
+    let satisfiedCount = principles
+      .map(p => p.predicate(password))
+      .reduce((count, satisfied) => count + (satisfied ? 1 : 0), 0);
+
+    let principlesCount = principles.length;
+
+    return satisfiedCount / principlesCount * 100.0;
+  }
+
+  progressColor() {
+    let percentage = this.satisfiedPercent();
+
+    return classNames({
+      danger: percentage < 33.4,
+      success: percentage >= 66.7,
+      warning: percentage >= 33.4 && percentage < 66.7
+    });
+  }
+
+  render() {
+    return (
+      <ProgressBar
+        now={this.satisfiedPercent()}
+        bsStyle={this.progressColor()}
+      />
+    );
+  }
+}
+
+class PrinciplesList extends React.Component {
+  principleSatisfied(principle) {
+    let { password } = this.props;
+
+    return principle.predicate(password);
+  }
+
+  principleClass(principle) {
+    let satisfied = this.principleSatisfied(principle);
+
+    return classNames({
+      ["text-success"]: satisfied,
+      ["text-danger"]: !satisfied
+    });
+  }
+
+  render() {
+    let { principles } = this.props;
+
+    return (
+      <ul>
+        {principles.map(principle =>
+          <li key={principle.label} className={this.principleClass(principle)}>
+            <small>
+              {principle.label}
+            </small>
+          </li>
+        )}
+      </ul>
+    );
+  }
+}
+
+class PasswordField extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handlePasswordChange = this.handlePasswordChange.bind(this);
+  }
+
+  handlePasswordChange(ev) {
+    let { onPasswordChange } = this.props;
+    onPasswordChange(ev.target.value);
+  }
+
+  satisfiedPercent() {
+    let { principles, password } = this.props;
+
+    let satisfiedCount = principles
+      .map(p => p.predicate(password))
+      .reduce((count, satisfied) => count + (satisfied ? 1 : 0), 0);
+
+    let principlesCount = principles.length;
+
+    return satisfiedCount / principlesCount * 100.0;
+  }
+
+  inputColor() {
+    let percentage = this.satisfiedPercent();
+
+    return classNames({
+      error: percentage < 33.4,
+      success: percentage >= 66.7,
+      warning: percentage >= 33.4 && percentage < 66.7
+    });
+  }
+
+  render() {
+    let { password } = this.props;
+
+    return (
+      <FormGroup validationState={this.inputColor()}>
+        <ControlLabel>Password</ControlLabel>
+        <FormControl
+          type="password"
+          value={password}
+          onChange={this.handlePasswordChange}
+        />
+        <FormControl.Feedback />
+      </FormGroup>
+    );
+  }
+}
 
 
 
