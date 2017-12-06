@@ -6,6 +6,78 @@ var classNames = require('classnames');
 
 
 
+// dynamic invoice
+class InvoiceLineItems extends React.Component {
+  tableHeader() {
+    return (
+      <thead>
+        <tr>
+          <th width="1%">Nr</th>
+          <th width="55%"></th>
+          <th width="20%"></th>
+          <th width="10%"></th>
+          <th width="10%"></th>
+          <th width="4%"></th>
+        </tr>
+      </thead>
+    );
+  }
+  tableFooter() {
+    return(
+      <tfoot>
+        <tr>
+          <td colSpan="4"></td>
+          <th><h4>...</h4></th>
+          <td>
+            <button className="btn btn-success">
+              <span className="glyphicon glyphicon-plus"></span>
+            </button>
+          </td>
+        </tr>
+      </tfoot>
+    );
+  }
+  render() {
+    return (
+      <table className="table table-bordered table-hover">
+        {this.tableHeader()}
+        <tbody>
+          <LineItem />
+        </tbody>
+        {this.tableFooter()}
+      </table>
+    );
+  }
+}
+class LineItem extends React.Component {
+  render() {
+    return (
+      <tr>
+        <td>1.</td>
+        <td>
+          <input name="title" className="form-control" />
+        </td>
+        <td>  
+          <div className="input-group">
+            <div className="input-group-addon">$</div>
+            <input name="price" className="form-control" />
+          </div>
+        </td>
+        <td>
+          <input name="amount" className="form-control" />
+        </td>
+        <td><h4>...</h4></td>
+        <td>  
+          <button className="btn btn-danger">
+            <span className="glyphicon glyphicon-trash"></span>
+          </button>
+        </td>
+      </tr>
+    );
+  }
+}
+
+
 // Password Strength
 class PasswordInput extends React.Component {
   constructor(props) {
@@ -654,6 +726,8 @@ class App extends Component {
         <ChannelSearch />
 
         <PasswordInput />
+
+        <InvoiceLineItems />
 
       </div>
     );
