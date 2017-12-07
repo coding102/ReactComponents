@@ -11,6 +11,14 @@ class InvoiceLineItems extends React.Component {
   constructor(props) {
     super(props);
     this.state = { price: null, amount: null };
+    this.priceChanged = this.priceChanged.bind(this);
+    this.amountChanged = this.amountChanged.bind(this);
+  }
+  priceChanged(event) {
+    this.setState({ price: event.target.value });
+  }
+  amountChanged(event) {
+    this.setState({ amount: event.target.value });
   }
   tableHeader() {
     return (
@@ -47,7 +55,9 @@ class InvoiceLineItems extends React.Component {
         {this.tableHeader()}
         <tbody>
           <LineItem price={this.state.price} 
-                    amount={this.state.amount} />
+                    amount={this.state.amount}
+                    priceChanged={this.priceChanged}
+                    amountChanged={this.amountChanged} />
         </tbody>
         {this.tableFooter()}
       </table>
@@ -55,8 +65,14 @@ class InvoiceLineItems extends React.Component {
   }
 }
 class LineItem extends React.Component {
-  render() {
+  calculateTotal() {
     let { price, amount } = this.props;
+    let p = parseFloat(price);
+    let a = parseFloat(amount);
+    return ((isNaN(p) || isNaN(a)) ? 0 : p * a);
+  }
+  render() {
+    let { price, priceChanged, amount, amountChanged } = this.props;
     return (
       <tr>
         <td>1.</td>
@@ -67,14 +83,16 @@ class LineItem extends React.Component {
           <div className="input-group">
             <div className="input-group-addon">$</div>
             <input name="price" value={price} 
-                                className="form-control" />
+                                className="form-control"
+                                onChange={priceChanged} />
           </div>
         </td>
         <td>
           <input name="amount" value={amount}
-                               className="form-control" />
+                               className="form-control"
+                               onChange={amountChanged} />
         </td>
-        <td><h4>...</h4></td>
+        <td><h4>${this.calculateTotal()}</h4></td>
         <td>  
           <button className="btn btn-danger">
             <span className="glyphicon glyphicon-trash"></span>
@@ -84,6 +102,8 @@ class LineItem extends React.Component {
     );
   }
 }
+
+
 
 
 // Password Strength
