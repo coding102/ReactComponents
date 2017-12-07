@@ -8,6 +8,10 @@ var classNames = require('classnames');
 
 // dynamic invoice
 class InvoiceLineItems extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { price: null, amount: null };
+  }
   tableHeader() {
     return (
       <thead>
@@ -42,7 +46,8 @@ class InvoiceLineItems extends React.Component {
       <table className="table table-bordered table-hover">
         {this.tableHeader()}
         <tbody>
-          <LineItem />
+          <LineItem price={this.state.price} 
+                    amount={this.state.amount} />
         </tbody>
         {this.tableFooter()}
       </table>
@@ -51,6 +56,7 @@ class InvoiceLineItems extends React.Component {
 }
 class LineItem extends React.Component {
   render() {
+    let { price, amount } = this.props;
     return (
       <tr>
         <td>1.</td>
@@ -60,11 +66,13 @@ class LineItem extends React.Component {
         <td>  
           <div className="input-group">
             <div className="input-group-addon">$</div>
-            <input name="price" className="form-control" />
+            <input name="price" value={price} 
+                                className="form-control" />
           </div>
         </td>
         <td>
-          <input name="amount" className="form-control" />
+          <input name="amount" value={amount}
+                               className="form-control" />
         </td>
         <td><h4>...</h4></td>
         <td>  
