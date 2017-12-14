@@ -10,15 +10,24 @@ var classNames = require('classnames');
 class InvoiceLineItems extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { price: null, amount: null };
+    this.state = { 
+        line_items: [
+        { price: null, amount: null },
+        { price: null, amount: null }
+      ]
+    };
     this.priceChanged = this.priceChanged.bind(this);
     this.amountChanged = this.amountChanged.bind(this);
   }
-  priceChanged(event) {
-    this.setState({ price: event.target.value });
+  priceChanged(index, event) {
+    let { line_items } = this.state;
+    line_items[index].price = event.target.value;
+    this.setState({ line_items });
   }
-  amountChanged(event) {
-    this.setState({ amount: event.target.value });
+  amountChanged(index, event) {
+    let { line_items } = this.state;
+    line_items[index].amount = event.target.value;
+    this.setState({ line_items });
   }
   tableHeader() {
     return (
@@ -54,8 +63,14 @@ class InvoiceLineItems extends React.Component {
       <table className="table table-bordered table-hover">
         {this.tableHeader()}
         <tbody>
-          <LineItem price={this.state.price} 
-                    amount={this.state.amount}
+          <LineItem index={0}
+                    price={this.state.line_items[0].price} 
+                    amount={this.state.line_items[0].amount}
+                    priceChanged={this.priceChanged}
+                    amountChanged={this.amountChanged} />
+          <LineItem index={1}
+                    price={this.state.line_items[1].price} 
+                    amount={this.state.line_items[1].amount}
                     priceChanged={this.priceChanged}
                     amountChanged={this.amountChanged} />
         </tbody>
@@ -71,11 +86,14 @@ class LineItem extends React.Component {
     let a = parseFloat(amount);
     return ((isNaN(p) || isNaN(a)) ? 0 : p * a);
   }
+  number() {
+    return (parseInt(this.props.index) + 1);
+  }
   render() {
-    let { price, priceChanged, amount, amountChanged } = this.props;
+    let { index, price, priceChanged, amount, amountChanged } = this.props;
     return (
       <tr>
-        <td>1.</td>
+        <td>{this.number()}</td>
         <td>
           <input name="title" className="form-control" />
         </td>
@@ -84,13 +102,13 @@ class LineItem extends React.Component {
             <div className="input-group-addon">$</div>
             <input name="price" value={price} 
                                 className="form-control"
-                                onChange={priceChanged} />
+                                onChange={priceChanged.bind(null, index)} />
           </div>
         </td>
         <td>
           <input name="amount" value={amount}
                                className="form-control"
-                               onChange={amountChanged} />
+                               onChange={amountChanged.bind(null, index)} />
         </td>
         <td><h4>${this.calculateTotal()}</h4></td>
         <td>  
