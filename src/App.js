@@ -59,20 +59,21 @@ class InvoiceLineItems extends React.Component {
     );
   }
   render() {
-    return (
+    let line_items=[];
+    for(var index in this.state.line_items) {
+      line_items.push(
+        <LineItem index={index}
+                  price={this.state.line_items[index].price}
+                  amount={this.state.line_items[index].amount}
+                  priceChanged={this.priceChanged}
+                  amountChanged={this.amountChanged} />
+      );
+    }
+    return(
       <table className="table table-bordered table-hover">
         {this.tableHeader()}
         <tbody>
-          <LineItem index={0}
-                    price={this.state.line_items[0].price} 
-                    amount={this.state.line_items[0].amount}
-                    priceChanged={this.priceChanged}
-                    amountChanged={this.amountChanged} />
-          <LineItem index={1}
-                    price={this.state.line_items[1].price} 
-                    amount={this.state.line_items[1].amount}
-                    priceChanged={this.priceChanged}
-                    amountChanged={this.amountChanged} />
+          {line_items}
         </tbody>
         {this.tableFooter()}
       </table>
