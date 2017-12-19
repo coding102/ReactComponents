@@ -13,11 +13,11 @@ class InvoiceLineItems extends React.Component {
     this.state = { 
         line_items: [
         { price: null, amount: null },
-        { price: null, amount: null }
       ]
     };
     this.priceChanged = this.priceChanged.bind(this);
     this.amountChanged = this.amountChanged.bind(this);
+    this.addLineItem = this.addLineItem.bind(this);
   }
   priceChanged(index, event) {
     let { line_items } = this.state;
@@ -27,6 +27,21 @@ class InvoiceLineItems extends React.Component {
   amountChanged(index, event) {
     let { line_items } = this.state;
     line_items[index].amount = event.target.value;
+    this.setState({ line_items });
+  }
+  totalPrice(price, amount) {
+    let p = parseFloat(price);
+    let a = parseFloat(amount);
+    return ((isNaN(p) || isNaN(a)) ? 0 : p * a);
+  }
+  calculateTotal() {
+    let { line_items } = this.state;
+    return line_items.map(i => this.totalPrice(i.price, i.amount))
+          .reduce((pv, cv) => pv + cv, 0);
+  }
+  addLineItem(event) {
+    let { line_items } = this.state;
+    line_items.push({ price: null, amount: null });
     this.setState({ line_items });
   }
   tableHeader() {
@@ -48,9 +63,10 @@ class InvoiceLineItems extends React.Component {
       <tfoot>
         <tr>
           <td colSpan="4"></td>
-          <th><h4>...</h4></th>
+          <th><h4>{this.calculateTotal()}</h4></th>
           <td>
-            <button className="btn btn-success">
+            <button className="btn btn-success" 
+                              onClick={this.addLineItem}>
               <span className="glyphicon glyphicon-plus"></span>
             </button>
           </td>
